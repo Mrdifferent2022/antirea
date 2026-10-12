@@ -4,7 +4,7 @@
   "description": "Lint your shipped artifacts for information leaks that reverse-engineering tools exploit",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Mrdifferent2022/antirea.git"
+    "url": "git+https://github.com/Mrdifferent2022/antirea.git"
   },
   "homepage": "https://github.com/Mrdifferent2022/antirea",
   "bugs": "https://github.com/Mrdifferent2022/antirea/issues",
