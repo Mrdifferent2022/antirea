@@ -24,7 +24,9 @@
     "build": "tsc -p tsconfig.json",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check": "tsc -p tsconfig.json --noEmit && vitest run"
+    "check": "tsc -p tsconfig.json --noEmit && vitest run",
+    "prepublishOnly": "npm run build && npm test",
+    "smoke": "node scripts/smoke.mjs"
   },
   "keywords": [
     "security",

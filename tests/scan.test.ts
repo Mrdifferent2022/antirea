@@ -2,10 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { scan } from '../src/core/engine.js';
 import { builtinRules } from '../src/rules/index.js';
 
-const WEB_FIXTURES = path.join(__dirname, 'fixtures', 'web');
+const WEB_FIXTURES = path.join(path.dirname(fileURLToPath(import.meta.url)), 'fixtures', 'web');
 
 /** Build a synthetic Go binary: ELF magic + buildinf magic + modinfo text. */
 function fakeGoBinary(modinfo: string): Buffer {

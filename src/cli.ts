@@ -18,6 +18,9 @@ Options:
   --format <console|json|sarif>   Output format (default: console)
   --fail-on <severity>            Exit 1 when any finding reaches this severity
                                   (info|warn|high|critical, default: high)
+  --ignore <pattern>              Exclude a file/dir name or glob (* matches
+                                  within one segment); repeatable, comma-separated.
+                                  Patterns in <target>/.antireaignore always apply.
   --version                       Print version
   --help                          Show this help
 `;
@@ -35,6 +38,7 @@ async function main(argv: string[]): Promise<number> {
     options: {
       format: { type: 'string', default: 'console' },
       'fail-on': { type: 'string', default: 'high' },
+      ignore: { type: 'string', multiple: true, default: [] },
       version: { type: 'boolean', default: false },
       help: { type: 'boolean', default: false },
     },
@@ -64,8 +68,9 @@ async function main(argv: string[]): Promise<number> {
     return 2;
   }
   const failOn = values['fail-on'] as Severity;
+  const ignore = (values.ignore ?? []).flatMap((v) => v.split(',').map((s) => s.trim()).filter(Boolean));
 
-  const result = await scan(target, builtinRules);
+  const result = await scan(target, builtinRules, { ignore });
   console.log(render(result));
 
   return result.findings.some((f) => severityAtLeast(f.severity, failOn)) ? 1 : 0;
