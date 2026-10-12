@@ -1,0 +1,37 @@
+{
+  "name": "shiplint",
+  "version": "0.1.0",
+  "description": "Lint your shipped artifacts for information leaks that reverse-engineering tools exploit",
+  "type": "module",
+  "bin": {
+    "shiplint": "dist/cli.js"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "tsc -p tsconfig.json --noEmit && vitest run"
+  },
+  "keywords": [
+    "security",
+    "reverse-engineering",
+    "sourcemap",
+    "build-hygiene",
+    "lint",
+    "ci"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  }
+}

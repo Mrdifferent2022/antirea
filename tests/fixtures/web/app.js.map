@@ -1,0 +1,1 @@
+{"version":3,"file":"app.js","sources":["../src/secret-logic.ts"],"sourcesContent":["// ACME Corp proprietary pricing algorithm\nexport function price(u){ return u * 42; }\n"],"names":["price"],"mappings":"AAAA"}
