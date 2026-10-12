@@ -40,7 +40,7 @@ describe('web rules', () => {
 
 describe('go/buildinfo-leak', () => {
   it('extracts module path, version and VCS settings from a Go binary', async () => {
-    const dir = await mkdtemp(path.join(tmpdir(), 'shiplint-'));
+    const dir = await mkdtemp(path.join(tmpdir(), 'antirea-'));
     try {
       const modinfo =
         'path\tcorp.example/internal/billing\n' +
@@ -62,7 +62,7 @@ describe('go/buildinfo-leak', () => {
   });
 
   it('reports base severity when no VCS info is embedded', async () => {
-    const dir = await mkdtemp(path.join(tmpdir(), 'shiplint-'));
+    const dir = await mkdtemp(path.join(tmpdir(), 'antirea-'));
     try {
       await writeFile(path.join(dir, 'app'), fakeGoBinary('path\texample.com/app\nmod\texample.com/app\tv1.0.0\n'));
       const result = await scan(dir, builtinRules);
@@ -75,7 +75,7 @@ describe('go/buildinfo-leak', () => {
   });
 
   it('ignores non-Go files', async () => {
-    const dir = await mkdtemp(path.join(tmpdir(), 'shiplint-'));
+    const dir = await mkdtemp(path.join(tmpdir(), 'antirea-'));
     try {
       await writeFile(path.join(dir, 'notes.txt'), 'just some text\n');
       const result = await scan(dir, builtinRules);

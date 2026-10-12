@@ -11,7 +11,7 @@ const SEVERITY_TAG: Record<Severity, string> = {
 export function renderConsole(result: ScanResult): string {
   const lines: string[] = [];
   if (result.findings.length === 0) {
-    lines.push(`shiplint: no leaks found (${result.summary.filesScanned} files scanned)`);
+    lines.push(`antirea: no leaks found (${result.summary.filesScanned} files scanned)`);
     return lines.join('\n');
   }
   for (const f of result.findings) {
@@ -23,7 +23,7 @@ export function renderConsole(result: ScanResult): string {
   }
   const s = result.summary.bySeverity;
   lines.push(
-    `shiplint: ${result.findings.length} finding(s) across ${result.summary.filesScanned} files ` +
+    `antirea: ${result.findings.length} finding(s) across ${result.summary.filesScanned} files ` +
       `(critical ${s.critical}, high ${s.high}, warn ${s.warn}, info ${s.info})`,
   );
   return lines.join('\n');

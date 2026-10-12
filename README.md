@@ -1,11 +1,11 @@
-# shiplint
+# antirea
 
 **Lint your shipped artifacts for information leaks that reverse-engineering tools exploit.**
 
-构建产物里的每一份"便利"——sourcemap、Go 构建元数据、未剥离的符号——都是逆向工具的攻击面。shiplint 在发布前扫描你的产物，报告泄露了什么、证据在哪、怎么修。
+构建产物里的每一份"便利"——sourcemap、Go 构建元数据、未剥离的符号——都是逆向工具的攻击面。antirea 在发布前扫描你的产物，报告泄露了什么、证据在哪、怎么修。
 
 ```
-$ shiplint scan dist/
+$ antirea scan dist/
 [HIGH] app.js.map
   web/sourcemap-file — Source map with embedded sourcesContent ships full original source code
   evidence: app.js.map contains sourcesContent — original sources can be fully reconstructed
@@ -15,7 +15,7 @@ $ shiplint scan dist/
 ## 用法
 
 ```bash
-npx shiplint scan <path> [--format console|json] [--fail-on info|warn|high|critical]
+npx antirea scan <path> [--format console|json] [--fail-on info|warn|high|critical]
 ```
 
 - `--format json`：机器可读输出，供 CI 消费

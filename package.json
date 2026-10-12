@@ -1,10 +1,10 @@
 {
-  "name": "shiplint",
+  "name": "antirea",
   "version": "0.1.0",
   "description": "Lint your shipped artifacts for information leaks that reverse-engineering tools exploit",
   "type": "module",
   "bin": {
-    "shiplint": "dist/cli.js"
+    "antirea": "dist/cli.js"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

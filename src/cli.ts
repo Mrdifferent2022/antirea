@@ -6,10 +6,10 @@ import { renderConsole } from './reporters/console.js';
 import { renderJson } from './reporters/json.js';
 import { SEVERITY_ORDER, severityAtLeast, type Severity } from './core/types.js';
 
-const USAGE = `shiplint — lint your shipped artifacts for information leaks
+const USAGE = `antirea — lint your shipped artifacts for information leaks
 
 Usage:
-  shiplint scan <path> [options]
+  antirea scan <path> [options]
 
 Options:
   --format <console|json>   Output format (default: console)
@@ -36,7 +36,7 @@ async function main(argv: string[]): Promise<number> {
     return 0;
   }
   if (values.version) {
-    console.log('shiplint 0.1.0');
+    console.log('antirea 0.1.0');
     return 0;
   }
 
