@@ -61,7 +61,8 @@ export const unstrippedSymbolsRule: Rule = {
   id: 'bin/unstripped-symbols',
   title: 'Binary ships symbols or debug info',
   severity: 'high',
-  appliesTo: (a) => a.type === 'native-binary',
+  // go-binary included: a Go build without -ldflags="-s -w" ships .symtab too.
+  appliesTo: (a) => a.type === 'native-binary' || a.type === 'go-binary',
   check(a): Finding[] {
     if (isElf(a.data)) {
       const sections = elfSectionNames(a.data);

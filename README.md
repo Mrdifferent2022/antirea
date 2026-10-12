@@ -19,7 +19,8 @@ npx antirea scan <path> [--format console|json|sarif] [--fail-on info|warn|high|
                         [--ignore <pattern>]...
 ```
 
-- `--format json` / `--format sarif`：机器可读输出；SARIF 2.1.0 可直接上传 GitHub Code Scanning
+- `--format json` / `--format sarif`：机器可读输出；SARIF 2.1.0 带 `partialFingerprints`（GitHub Code Scanning 去重所需），可直接 `upload-sarif` 上传
+  - **已知限制**：Code Scanning 会把 `artifactLocation.uri` 映射回仓库文件——扫描**未入库**的构建产物（如 `dist/`）时告警会创建但无代码定位。本仓库 CI 里有对 `tests/fixtures`（已入库）的真实上传示例
 - `--fail-on`：有任何 ≥ 该 severity 的发现时退出码为 1（默认 `high`），可直接做 CI 卡点
 - `--ignore`：排除文件名或 glob（`*` 匹配单段），可重复或逗号分隔；扫描根目录下的 `.antireaignore` 文件（gitignore 风格）自动生效——已知接受的泄露用它屏蔽
 

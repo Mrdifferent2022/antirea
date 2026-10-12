@@ -6,8 +6,7 @@ import { renderConsole } from './reporters/console.js';
 import { renderJson } from './reporters/json.js';
 import { renderSarif } from './reporters/sarif.js';
 import { SEVERITY_ORDER, severityAtLeast, type Severity } from './core/types.js';
-
-const VERSION = '0.2.0';
+import { VERSION } from './core/version.js';
 
 const USAGE = `antirea — lint your shipped artifacts for information leaks
 
