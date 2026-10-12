@@ -1,0 +1,28 @@
+name: publish
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+# OIDC token is what npm trusted publishing authenticates — no NPM_TOKEN secret needed.
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+      # npm trusted publishing requires npm >= 11.5.1; Node 22 ships npm 10.
+      - run: npm install -g npm@latest
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+      - name: Publish to npm via OIDC trusted publishing
+        run: npm publish --access public --provenance
