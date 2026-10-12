@@ -1,6 +1,6 @@
 {
   "name": "antirea",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Lint your shipped artifacts for information leaks that reverse-engineering tools exploit",
   "repository": {
     "type": "git",
