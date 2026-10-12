@@ -4,7 +4,10 @@ import { builtinRules } from './rules/index.js';
 import { scan } from './core/engine.js';
 import { renderConsole } from './reporters/console.js';
 import { renderJson } from './reporters/json.js';
+import { renderSarif } from './reporters/sarif.js';
 import { SEVERITY_ORDER, severityAtLeast, type Severity } from './core/types.js';
+
+const VERSION = '0.2.0';
 
 const USAGE = `antirea — lint your shipped artifacts for information leaks
 
@@ -12,12 +15,18 @@ Usage:
   antirea scan <path> [options]
 
 Options:
-  --format <console|json>   Output format (default: console)
-  --fail-on <severity>      Exit 1 when any finding reaches this severity
-                            (info|warn|high|critical, default: high)
-  --version                 Print version
-  --help                    Show this help
+  --format <console|json|sarif>   Output format (default: console)
+  --fail-on <severity>            Exit 1 when any finding reaches this severity
+                                  (info|warn|high|critical, default: high)
+  --version                       Print version
+  --help                          Show this help
 `;
+
+const RENDERERS: Record<string, (r: Awaited<ReturnType<typeof scan>>) => string> = {
+  console: renderConsole,
+  json: renderJson,
+  sarif: renderSarif,
+};
 
 async function main(argv: string[]): Promise<number> {
   const { values, positionals } = parseArgs({
@@ -36,7 +45,7 @@ async function main(argv: string[]): Promise<number> {
     return 0;
   }
   if (values.version) {
-    console.log('antirea 0.1.0');
+    console.log(`antirea ${VERSION}`);
     return 0;
   }
 
@@ -45,7 +54,8 @@ async function main(argv: string[]): Promise<number> {
     console.error(USAGE);
     return 2;
   }
-  if (values.format !== 'console' && values.format !== 'json') {
+  const render = RENDERERS[values.format ?? ''];
+  if (!render) {
     console.error(`unknown --format: ${values.format}`);
     return 2;
   }
@@ -56,7 +66,7 @@ async function main(argv: string[]): Promise<number> {
   const failOn = values['fail-on'] as Severity;
 
   const result = await scan(target, builtinRules);
-  console.log(values.format === 'json' ? renderJson(result) : renderConsole(result));
+  console.log(render(result));
 
   return result.findings.some((f) => severityAtLeast(f.severity, failOn)) ? 1 : 0;
 }

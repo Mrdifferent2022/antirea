@@ -15,10 +15,10 @@ $ antirea scan dist/
 ## 用法
 
 ```bash
-npx antirea scan <path> [--format console|json] [--fail-on info|warn|high|critical]
+npx antirea scan <path> [--format console|json|sarif] [--fail-on info|warn|high|critical]
 ```
 
-- `--format json`：机器可读输出，供 CI 消费
+- `--format json` / `--format sarif`：机器可读输出；SARIF 2.1.0 可直接上传 GitHub Code Scanning
 - `--fail-on`：有任何 ≥ 该 severity 的发现时退出码为 1（默认 `high`），可直接做 CI 卡点
 
 ## 规则 ↔ 逆向利用面对照表
@@ -27,11 +27,33 @@ npx antirea scan <path> [--format console|json] [--fail-on info|warn|high|critic
 
 | 规则 | 检测内容 | 对应利用面 |
 |---|---|---|
-| `web/sourcemap-file` | 产物中含 `.map` 文件（含内嵌 sourcesContent） | sourcemap 还原完整源码 |
+| `web/sourcemap-file` | 产物中含 `.map` 文件（识别内嵌 sourcesContent） | sourcemap 还原完整源码 |
 | `web/sourcemap-url` | bundle 尾部 `sourceMappingURL` 引用（远程 URL 升级为 high） | 指引逆向工具拉取源码地图 |
-| `go/buildinfo-leak` | Go 二进制内嵌模块路径、依赖、VCS 信息 | REA go 模块：构建元数据检查 |
+| `go/buildinfo-leak` | Go 二进制内嵌模块路径、依赖、VCS 信息（含 VCS 升级为 high） | REA `inspect-go-binary` 构建元数据检查 |
+| `electron/plaintext-asar` | asar 归档明文可读（解析头部并列出文件树作证据） | REA/Electron 应用解包 |
+| `electron/fuse-integrity` | Electron fuse 未开启 asar 完整性校验/限制加载 | asar 被替换篡改后仍被执行 |
+| `bin/unstripped-symbols` | ELF 带 `.symtab`/`.debug_*`、PE 引用 PDB 路径 | Ghidra/IDA/Hopper 反编译直接获得符号 |
 
-路线图（M1/M2）：Electron asar 明文与完整性检测、ELF/PE/Mach-O 符号未剥离、SARIF 报告（GitHub Code Scanning）、配置文件与 baseline、GitHub Action 封装。
+路线图（M2）：Mach-O 符号检测、配置文件与 baseline、GitHub Action 封装、npm 发布。
+
+## 对抗验证（实测记录）
+
+规则不是纸上谈兵——每一条都对真实逆向工具验证过。以下为本仓库实测：
+
+**Web/sourcemap**：用 REA `analyze-javascript-application` 分析 `tests/fixtures/web`（一个带 `app.js.map` 的 webpack bundle）：
+
+- REA 成功解析出 `source_map_reference → ../src/secret-logic.ts`（原始源文件路径）
+- `app.js.map` 内嵌的 `sourcesContent` 包含**完整原始 TypeScript 源码**，一行命令即可提取
+- antirea 对同一目录命中 `web/sourcemap-file`（HIGH）+ `web/sourcemap-url`（WARN）——两个泄露点全部提前报告
+
+**Go 二进制**：用 `go build` 默认参数编译一个模块名为 `corp.example/internal/billing` 的演示程序：
+
+| | REA `inspect-go-binary` 提取到 | antirea 报告 |
+|---|---|---|
+| 默认构建 | 模块路径、go1.23.4、10 项构建设置、`vcs.revision` 完整提交哈希 | HIGH，证据字段与 REA 提取结果逐项对应 |
+| 按 remediation 加固后（`-trimpath -buildvcs=false -ldflags="-s -w"`） | VCS 信息消失，构建设置减少到 7 项 | 降级为 WARN（模块路径为 Go 固有），退出码 0 通过 CI 卡点 |
+
+这就是 antirea 的闭环：**逆向工具能拿到什么，antirea 就在发布前报什么；按建议修复后，逆向工具的收获随之消失。**
 
 ## 设计原则
 

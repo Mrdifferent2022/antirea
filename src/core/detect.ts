@@ -22,6 +22,7 @@ function isMachO(data: Buffer): boolean {
 export function detectType(path: string, data: Buffer): ArtifactType {
   const lower = path.toLowerCase();
   if (lower.endsWith('.map')) return 'sourcemap';
+  if (lower.endsWith('.asar')) return 'electron-asar';
   if (/\.(m?js|cjs|jsx|ts|tsx)$/.test(lower)) return 'javascript';
 
   if (isElf(data) || isPe(data) || isMachO(data)) {

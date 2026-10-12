@@ -9,6 +9,7 @@ export function severityAtLeast(a: Severity, b: Severity): boolean {
 export type ArtifactType =
   | 'javascript'
   | 'sourcemap'
+  | 'electron-asar'
   | 'go-binary'
   | 'native-binary'
   | 'unknown';

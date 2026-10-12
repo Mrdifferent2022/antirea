@@ -28,28 +28,31 @@ export const goBuildinfoRule: Rule = {
     // The modinfo string is referenced by pointer from the header, so it lives
     // elsewhere in the data segment; scan the whole binary for its line grammar.
     const text = extractPrintableRegion(a.data, 0, a.data.length);
-    const modulePaths: string[] = [];
-    const buildSettings: string[] = [];
+    // The modinfo blob can appear multiple times in a binary (e.g. once in
+    // .data and once in a debug/relocation copy) — dedupe what we report.
+    const modulePaths = new Set<string>();
+    const buildSettings = new Set<string>();
     for (const m of text.matchAll(MOD_LINE_RE)) {
       const [_, key, value] = m;
       const firstField = value.split('\t')[0].trim();
+      if (/[^\x20-\x7e]/.test(firstField)) continue;
       if (key === 'mod' || key === 'path') {
-        if (firstField && !/[^\x20-\x7e]/.test(firstField)) modulePaths.push(firstField);
+        if (firstField) modulePaths.add(firstField);
       } else if (key === 'build') {
-        if (!/[^\x20-\x7e]/.test(firstField)) buildSettings.push(firstField);
+        buildSettings.add(firstField);
       }
     }
     const version = GO_VERSION_RE.exec(text)?.[0];
 
-    const vcsSettings = buildSettings.filter((s) => /^vcs\./.test(s));
+    const vcsSettings = [...buildSettings].filter((s) => /^vcs\./.test(s));
     const hasVcs = vcsSettings.length > 0;
 
     const evidenceParts = [
       'Go buildinf magic at offset ' + magicAt,
       version ? `compiler ${version}` : null,
-      modulePaths.length > 0 ? `module ${modulePaths[0]}` : null,
+      modulePaths.size > 0 ? `module ${[...modulePaths][0]}` : null,
       hasVcs ? `VCS settings: ${vcsSettings.join(', ')}` : null,
-      buildSettings.length > 0 ? `${buildSettings.length} build settings embedded` : null,
+      buildSettings.size > 0 ? `${buildSettings.size} build settings embedded` : null,
     ].filter(Boolean);
 
     return [
