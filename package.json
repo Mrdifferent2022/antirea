@@ -2,6 +2,12 @@
   "name": "antirea",
   "version": "0.2.1",
   "description": "Lint your shipped artifacts for information leaks that reverse-engineering tools exploit",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Mrdifferent2022/antirea.git"
+  },
+  "homepage": "https://github.com/Mrdifferent2022/antirea",
+  "bugs": "https://github.com/Mrdifferent2022/antirea/issues",
   "type": "module",
   "bin": {
     "antirea": "dist/cli.js"
